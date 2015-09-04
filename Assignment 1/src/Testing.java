@@ -1,14 +1,22 @@
-import java.math.BigInteger;
+import java.io.File;
 
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+
 
 
 public class Testing {
 
-	public static void main(String[] args) {
-		int test = 0xf;
-		if(test == 0xf) System.out.println(test);
+	public static void main(String[] args) 
+	{
+		Integer i = new Integer(0);
+		swap(i, 2);
+		
+		System.out.println(i);
 
+	}
+	
+	private static void swap(int i, int updated)
+	{
+		i = new Integer(updated);
 	}
 
 }
