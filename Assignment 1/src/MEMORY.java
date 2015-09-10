@@ -18,19 +18,26 @@ public class MEMORY
 		MEM = new int[0xff + 0x1];  // For the range to 0-FF we need FF+1 potential entries in the array
 	}
 	
+	/**
+	 * This method is used to interact with the "system memory" and is the main interface for the MEMORY class
+	 * @param x The action to be taken
+	 * @param y The memory address
+	 * @param z The variable to be written into memory, or read into from memory
+	 * @return the contents of memory at position y if x = READ
+	 */
 	public int memoryAction(String x, int y, int z)
 	{
 		if(x.equals(READ))
 		{
-			return MEM[y];
+			return MEM[y];  // Has to return a value since you can't assign back into int values across classes
 		}
 		if(x.equals(WRITE))
 		{
-			MEM[y] = z;
+			MEM[y] = z;  // Writes z into MEM at position y
 		}
 		if(x.equals(DUMP))
 		{
-			dumpMemory();
+			dumpMemory();  // Writes out the contents of MEM in the specified arrangement
 		}
 		return 0;
 	}
