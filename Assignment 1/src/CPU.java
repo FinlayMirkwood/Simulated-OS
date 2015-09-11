@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * 
  * @author Thomas Elswick
@@ -6,9 +8,11 @@
  */
 public class CPU 
 {
-	private int opCode, registerAddress, indexRegister, operandAddress, pc;
+	private int opCode, arithRegisterAddress, indexRegisterAddress, operandAddress, pc;
 	
 	private boolean indirect, running;
+	
+	private int[] arithRegister, indexRegister;
 	
 	private MEMORY mem;
 	
@@ -17,13 +21,16 @@ public class CPU
 		this.mem = mem;
 		
 		opCode = 0;
-		registerAddress = 0;
-		indexRegister = 0;
+		arithRegisterAddress = 0;
+		indexRegisterAddress = 0;
 		operandAddress = 0;
 		pc = 0;
 		
 		indirect = false;
 		running = false; 
+		
+		arithRegister = new int[0xf];
+		indexRegister = new int[0xf];
 	}
 
 	public void execute(int firstMemoryLocation) 
@@ -46,10 +53,10 @@ public class CPU
 			opCode = (Integer.parseInt(word.substring(0, 2), 16) & 0b01111111);
 			
 			// Gets the next hex digit which is the arithmetic register address
-			registerAddress = Integer.parseInt(word.substring(2, 3), 16);
+			arithRegisterAddress = Integer.parseInt(word.substring(2, 3), 16);
 			
 			// Gets the next hex digit which is the index register
-			indexRegister = Integer.parseInt(word.substring(3, 4), 16);
+			indexRegisterAddress = Integer.parseInt(word.substring(3, 4), 16);
 			
 			// Gets the last four hex digits which are the operand address
 			operandAddress = Integer.parseInt(word.substring(4), 16);
@@ -132,20 +139,59 @@ public class CPU
 
 	private void write()
 	{
-		// TODO Auto-generated method stub
-		
+		String hold = "";
+		hold += Integer.toHexString(mem.memoryAction(MEMORY.READ, operandAddress + 3, 0));
+		hold += Integer.toHexString(mem.memoryAction(MEMORY.READ, operandAddress + 2, 0));
+		hold += Integer.toHexString(mem.memoryAction(MEMORY.READ, operandAddress + 1, 0));
+		hold += Integer.toHexString(mem.memoryAction(MEMORY.READ, operandAddress + 0, 0));
+		System.out.println(hold);
+		SYSTEM.CLOCK += 10;
+		pc++;
 	}
 
 	private void read()
 	{
-		// TODO Auto-generated method stub
+		Scanner scan = new Scanner(System.in);  // Creates a new scanner with which to get input
+		String input = scan.nextLine();  // Gets a line of input from the user, we will check the input's correctness later
+		if(input.length() > 32)  // The function only takes in 32 hex digits, so if the input is longer than this it's wrong
+		{
+			// If the input is to long then we need to exit this job and give control back to SYSTEM
+			System.out.println("Error: input can be no longer than 32 hexadecimal digits");
+			running = false;
+			return;
+		}
+		else // Input isn't too long so we can move on
+		{
+			while(input.length() < 32) // The input needs to be 32 hex digits so we may need to pad a bit with 0s
+			{
+				input = "0" + input;
+			}
+		}
+		try
+		{
+			Integer.parseInt(input, 16);  // Checks to make sure that we actually have hexidecimal input
+		} catch (Exception e)  // If we don't then we catch that and exit to SYSTEM
+		{
+			System.out.println("Error: Invalid input, input must be in hexadecimal");
+			running = false;
+			return;
+		}
+		// Here we load the input into memory now that we know the input is all good
+		mem.memoryAction(MEMORY.WRITE, operandAddress + 0, Integer.parseInt(input.substring(24), 16));
+		mem.memoryAction(MEMORY.WRITE, operandAddress + 1, Integer.parseInt(input.substring(16, 24), 16));
+		mem.memoryAction(MEMORY.WRITE, operandAddress + 2, Integer.parseInt(input.substring(8, 16), 16));
+		mem.memoryAction(MEMORY.WRITE, operandAddress + 3, Integer.parseInt(input.substring(0, 8), 16));
 		
+		// Finally we increment the clock by 10 since this is an expensive procedure, and the pc goes up by one
+		SYSTEM.CLOCK += 10;
+		pc++;
 	}
 
 	private void or()
 	{
 		// TODO Auto-generated method stub
-		
+		SYSTEM.CLOCK++;
+		pc++;
 	}
 
 	private void and()
@@ -228,8 +274,7 @@ public class CPU
 
 	private void halt()
 	{
-		// TODO Auto-generated method stub
-		
+		running = false;		
 	}
 	
 }

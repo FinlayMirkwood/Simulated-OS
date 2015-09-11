@@ -46,7 +46,27 @@ public class Testing {
 //		String word = "FF";
 //		System.out.println((Integer.parseInt(word.substring(0, 2), 16) & 0b01111111));
 		
+//		Scanner scan = new Scanner(System.in);
+//		scan.useDelimiter("\n");
+//		System.out.print(scan.next());
 		
+		Scanner scan = new Scanner(System.in);
+		String input = scan.nextLine();
+		if(input.length() > 32) System.out.println("Error: input can be no longer than 32 hexadecimal digits");
+		else
+		{
+			while(input.length() < 32)
+			{
+				input = "0" + input;
+			}
+		}
+		try
+		{
+			Integer.parseInt(input, 16);
+		} catch (Exception e)
+		{
+			System.out.println("Error: Invalid input, input must be in hexadecimal");
+		}
 		
 	}
 	
