@@ -1,14 +1,18 @@
+import java.io.IOException;
+
 /**
  * 
  * @author Thomas Elswick
  * @date 9/3/15
- * @updated 9/3/15
+ * @updated 9/12/15
  */
 public class MEMORY 
 {
 	public static String READ = "READ";
 	public static String WRITE = "WRIT";
 	public static String DUMP = "DUMP";
+	
+	private String nl = System.getProperty("line.separator");
 	
 	
 	private int[] MEM;
@@ -24,16 +28,31 @@ public class MEMORY
 	 * @param y The memory address
 	 * @param z The variable to be written into memory, or read into from memory
 	 * @return the contents of memory at position y if x = READ
+	 * @throws IOException 
 	 */
-	public int memoryAction(String x, int y, int z)
+	public int memoryAction(String x, int y, int z) throws IOException
 	{
 		if(x.equals(READ))
 		{
-			return MEM[y];  // Has to return a value since you can't assign back into int values across classes
+			try
+			{
+				return MEM[y]; // Has to return a value since you can't assign back into int values across classes
+			} catch (IndexOutOfBoundsException e)
+			{
+				System.out.println("Error: Index Out of Bournds Exception. Read operation has failed. Program may have unexpected results.");
+				SYSTEM.output.write("Error: Index Out of Bournds Exception. Read operation has failed. Program may have unexpected results." + nl);
+			}  
 		}
 		if(x.equals(WRITE))
 		{
-			MEM[y] = z;  // Writes z into MEM at position y
+			try
+			{
+				MEM[y] = z;  // Writes z into MEM at position y
+			} catch (IndexOutOfBoundsException e)
+			{
+				System.out.println("Error: Index Out of Bournds Exception. Write operation has failed. Program may have unexpected results.");
+				SYSTEM.output.write("Error: Index Out of Bournds Exception. Write operation has failed. Program may have unexpected results." + nl);
+			}
 		}
 		if(x.equals(DUMP))
 		{
@@ -42,18 +61,23 @@ public class MEMORY
 		return 0;
 	}
 
-	private void dumpMemory()
+	private void dumpMemory() throws IOException
 	{
 		for(int i = 0; i < 32; i++)
 		{
 			System.out.printf("%04x", i*8);
+			SYSTEM.output.write(String.format("%04x", i*8));
 			System.out.print("   ");
+			SYSTEM.output.write("   ");
 			for(int j = 0; j < 8; j++)
 			{
 				System.out.printf("%08x", MEM[(i*8) + j]);
+				SYSTEM.output.write(String.format("%08x", MEM[(i*8) + j]));
 				System.out.print(" ");
+				SYSTEM.output.write(" ");
 			}
 			System.out.println();
+			SYSTEM.output.write(nl);
 		}
 		
 	}

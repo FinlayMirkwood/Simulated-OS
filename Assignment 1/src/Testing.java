@@ -50,23 +50,28 @@ public class Testing {
 //		scan.useDelimiter("\n");
 //		System.out.print(scan.next());
 		
-		Scanner scan = new Scanner(System.in);
-		String input = scan.nextLine();
-		if(input.length() > 32) System.out.println("Error: input can be no longer than 32 hexadecimal digits");
-		else
-		{
-			while(input.length() < 32)
-			{
-				input = "0" + input;
-			}
-		}
-		try
-		{
-			Integer.parseInt(input, 16);
-		} catch (Exception e)
-		{
-			System.out.println("Error: Invalid input, input must be in hexadecimal");
-		}
+//		Scanner scan = new Scanner(System.in);
+//		String input = scan.nextLine();
+//		if(input.length() > 32) System.out.println("Error: input can be no longer than 32 hexadecimal digits");
+//		else
+//		{
+//			while(input.length() < 32)
+//			{
+//				input = "0" + input;
+//			}
+//		}
+//		try
+//		{
+//			Integer.parseInt(input, 16);
+//		} catch (Exception e)
+//		{
+//			System.out.println("Error: Invalid input, input must be in hexadecimal");
+//		}
+		
+		long i = 0x7fffffff;
+		
+		System.out.println(i);
+		System.out.println(Integer.MAX_VALUE);
 		
 	}
 	

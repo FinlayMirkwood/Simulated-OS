@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * 
  * @author Thomas Elswick
  * @date 9/3/15
- * @updated 9/5/15
+ * @updated 9/12/15
  */
 public class LOADER 
 {
@@ -16,9 +16,11 @@ public class LOADER
 	private int lastRecordLocation;
 	private int dataLength;
 	
-	private boolean foundNextJob;
+	private boolean foundNextJob, foundNextWords, foundNextLastLine;
 	
 	private int[] dataWords;
+	
+	private String nl = System.getProperty("line.separator");
 	
 	public Scanner scan;
 	
@@ -28,7 +30,7 @@ public class LOADER
 	{
 		this.mem = mem;
 		
-		File f = new File("res/test.txt");
+		File f = new File("job.txt");
 		try
 		{
 			scan = new Scanner(f);
@@ -39,20 +41,35 @@ public class LOADER
 		}
 		
 		foundNextJob = false;
+		foundNextWords = false;
+		foundNextLastLine = false;
 		
 		firstRecordLocation = 0;
 		lastRecordLocation = 0;
 		dataLength = 0;
 	}
 
-	public int loadNextJob() 
+	public int loadNextJob() throws IOException 
 	{
 		foundNextJob = getFirstLine(); // Gets the first line with the first record location and length
 		if(foundNextJob)
 		{
-			getDataWords(); // Gets the data words that make up the instructions
-			loadDataWords(); // Loads the data words that make up the instructions into MEM
-			getLastLine(); // Gets the last line of instructions that contains the last record start address and the trace flag
+			foundNextWords = getDataWords(); // Gets the data words that make up the instructions
+			if(foundNextWords)
+			{
+				loadDataWords(); // Loads the data words that make up the instructions into MEM
+				foundNextLastLine = getLastLine(); // Gets the last line of instructions that contains the last record start address and the trace flag
+				if(!foundNextLastLine)
+				{
+					SYSTEM.LAST_JOB = true;
+					return -1;
+				}
+			}
+			else
+			{
+				SYSTEM.LAST_JOB = true;
+				return -1;
+			}
 		}
 		else 
 		{
@@ -85,15 +102,31 @@ public class LOADER
 		return true;
 	}
 	
-	public void getLastLine()
+	public boolean getLastLine() throws IOException
 	{
-		String temp = scan.nextLine();
-		lastRecordLocation = Integer.parseInt(temp.substring(0, 2), 16);
-		if(Integer.parseInt(temp.substring(3), 16) > 0) SYSTEM.TRACE = true;
-		else SYSTEM.TRACE = false;
+		String temp = "";
+		String pattern = "[0-9a-fA-F]{2}[ \t][0-9a-fA-F]{1}";
+		if(scan.hasNextLine())
+		{
+			temp = scan.nextLine();
+			if(Pattern.matches(pattern, temp))
+			{
+				lastRecordLocation = Integer.parseInt(temp.substring(0, 2), 16);
+				if(Integer.parseInt(temp.substring(3), 16) > 0) SYSTEM.TRACE = true;
+				else SYSTEM.TRACE = false;
+			}
+			else
+			{
+				System.out.println("Error: Improper instruction format - Last line");
+				SYSTEM.output.write("Error: Improper instruction format - Last line" + nl);
+				return false;
+			}
+			
+		}
+		return true;
 	}
 	
-	public void getDataWords()
+	public boolean getDataWords() throws IOException
 	{
 		dataWords = new int[dataLength];
 		int counter = 0;
@@ -103,13 +136,22 @@ public class LOADER
 			currentLine = scan.nextLine();
 			for(int j = 0; j < currentLine.length(); j += 8)
 			{
-				dataWords[counter] = Integer.parseInt(currentLine.substring(j, j+8), 16);
+				try
+				{
+					dataWords[counter] = Integer.parseInt(currentLine.substring(j, j+8), 16);
+				} catch (Exception e)
+				{
+					System.out.println("Error: Improper instruction format - Instructions");
+					SYSTEM.output.write("Error: Improper instruction format - Instructions" + nl);
+					return false;
+				}
 				counter++;
 			}
 		}
+		return true;
 	}
 	
-	public void loadDataWords()
+	public void loadDataWords() throws IOException
 	{
 		for(int i = 0; i < dataWords.length; i++)
 		{
