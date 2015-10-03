@@ -172,7 +172,9 @@ public class LOADER
 		int counter = 0; // Counter variable used when parsing the instructions
 		String currentLine = ""; // A variable to hold the line of data we are currently working on
 		// We know the number of words, there are four words per line, so this works through "number-of-words/4" lines
-		for(int i = 0; i < dataLength / 4; i++)
+		int rows = dataLength / 4;
+		if(dataLength % 4 != 0) rows++;
+		for(int i = 0; i < rows; i++)
 		{
 			if(scan.hasNextLine()) // Checks to make sure we have anoter line to work with
 			{
