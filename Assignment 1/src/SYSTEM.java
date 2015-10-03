@@ -11,6 +11,7 @@ import java.io.IOException;
 public class SYSTEM 
 {
 	public static int CLOCK;  // A clock variable to keep track of simulated running time
+	private static int jobID;
 	
 	public static boolean LAST_JOB;  // Keeps track of whether or not we are on the last job in the job.txt file
 	public static boolean TRACE;  // Gives access to whether or not the trace bit is on
@@ -28,7 +29,8 @@ public class SYSTEM
 	 */
 	public static void main(String[] args) throws IOException
 	{
-		CLOCK = 0;  
+		CLOCK = 0;
+		jobID = 0;
 		
 		LAST_JOB = false;
 		TRACE = false;
@@ -49,11 +51,21 @@ public class SYSTEM
 		while(LAST_JOB == false)
 		{
 			// lod loads the next job which is then executed by cpu
-			cpu.execute(lod.loadNextJob());
-			// Writing output to the system and to the output file
-			System.out.println("Clock: " + CLOCK);
-			SYSTEM.output.write("Clock: " + CLOCK + nl);
-		}
+			int loadResult = lod.loadNextJob();
+			cpu.execute(loadResult);
+			
+			if(loadResult >= 0) // If the result is a positive number then it found a job
+			{
+				// Writing output to the system and to the output file
+				System.out.println("\nJob ID: " + jobID);
+				SYSTEM.output.write(nl + "Job ID: " + jobID + nl);
+				System.out.println("Clock: " + CLOCK + "\n\n");
+				SYSTEM.output.write("Clock: " + CLOCK + nl + nl + nl);
+			}
+			
+			// Increment job ID
+			jobID++;
+		} 
 		// Now that all jobs are done we need to flush close our writers
 		output.flush();
 		output.close();

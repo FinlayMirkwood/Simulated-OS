@@ -15,11 +15,11 @@ public class MEMORY
 	
 	private String nl = System.getProperty("line.separator"); // The new line character for use when  writing to a file
 	
-	private int[] MEM;
+	private long[] MEM;
 	
 	public MEMORY() 
 	{
-		MEM = new int[0xff + 0x1];  // For the range to 0-FF we need FF+1 potential entries in the array
+		MEM = new long[0xff + 0x1];  // For the range to 0-FF we need FF+1 potential entries in the array
 	}
 	
 	/**
@@ -36,7 +36,7 @@ public class MEMORY
 		{
 			try
 			{
-				return MEM[y]; // Has to return a value since you can't assign back into int values across classes
+				return (int) MEM[y]; // Has to return a value since you can't assign back into int values across classes
 			} catch (IndexOutOfBoundsException e)
 			{
 				// If there is an Index Out of Bounds Exception then a message is sent out, but execution continues

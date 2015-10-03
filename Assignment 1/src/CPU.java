@@ -157,6 +157,7 @@ public class CPU
 		// Send out an error message and then end this job
 		System.out.println("Error: Invalid operation code");
 		SYSTEM.output.write("Error: Invalid operation code" + nl);
+		mem.memoryAction(MEMORY.DUMP, 0, 0);
 		running = false;		
 	}
 
@@ -240,6 +241,7 @@ public class CPU
 			// If the input is to long then we need to exit this job and give control back to SYSTEM
 			System.out.println("Error: input can be no longer than 32 hexadecimal digits");
 			SYSTEM.output.write("Error: input can be no longer than 32 hexadecimal digits" + nl);
+			mem.memoryAction(MEMORY.DUMP, 0, 0);
 			running = false;
 			return;
 		}
@@ -257,6 +259,7 @@ public class CPU
 		{
 			System.out.println("Error: Invalid input, input must be in hexadecimal");
 			SYSTEM.output.write("Error: Invalid input, input must be in hexadecimal" + nl);
+			mem.memoryAction(MEMORY.DUMP, 0, 0);
 			running = false;
 			return;
 		}
@@ -537,6 +540,7 @@ public class CPU
 			// If we are we  send out an error message and shut down this job
 			System.out.println("Error: Division by zero. Congratulations you have doomed us all");
 			SYSTEM.output.write("Error: Division by zero. Congratulations you have doomed us all" + nl);
+			mem.memoryAction(MEMORY.DUMP, 0, 0);
 			running = false;
 			return;
 		}
@@ -576,6 +580,7 @@ public class CPU
 			// If it is too large we send out a message and then exit this job
 			System.out.println("Error: Buffer overflow has occurred - Multiply");
 			SYSTEM.output.write("Error: Buffer overflow has occurred - Multiply" + nl);
+			mem.memoryAction(MEMORY.DUMP, 0, 0);
 			running = false;
 			return;
 		}
@@ -615,6 +620,7 @@ public class CPU
 			// If not an error message is sent out and the job is exited
 			System.out.println("Error: Buffer overflow has occurred - Subtract");
 			SYSTEM.output.write("Error: Buffer overflow has occurred - Subtract" + nl);
+			mem.memoryAction(MEMORY.DUMP, 0, 0);
 			running = false;
 			return;
 		}
@@ -654,6 +660,7 @@ public class CPU
 			// If not then an error message is sent out and the job is exited
 			System.out.println("Error: Buffer overflow has occurred - Add");
 			SYSTEM.output.write("Error: Buffer overflow has occurred - Add" + nl);
+			mem.memoryAction(MEMORY.DUMP, 0, 0);
 			running = false;
 			return;
 		}
@@ -742,6 +749,7 @@ public class CPU
 			SYSTEM.trace.write("ALERT" + nl + "Halt" + nl + nl);
 		}
 		
+		mem.memoryAction(MEMORY.DUMP, 0, 0);
 		running = false; // When halt is called the current job is done so running is set to false to signify an end to the current job
 		
 		if(SYSTEM.TRACE) // Debugging message sent out when trace is on
